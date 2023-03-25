@@ -1,27 +1,23 @@
 const butInstall = document.getElementById('buttonInstall');
 
-// Logic for installing the PWA
-// Added an event handler to the `beforeinstallprompt` event
+// When the "beforeinstallprompt" event is triggered, it prevents the default behavior and makes the "Install" button visible
 window.addEventListener('beforeinstallprompt', (event) => {
+    event.preventDefault();
+    butInstall.style.visibility = 'visible';
+  
+    // Store the triggered events
     window.deferredPrompt = event;
   
-    butInstall.classList.toggle('hidden', false);
-  });
-  
-  // Implemented a click event handler on the `butInstall` element
-  butInstall.addEventListener('click', async () => {
-    const promptEvent = window.deferredPrompt;
-      if (!promptEvent) {
-        return;
+    // When the "buttonInstall" button is clicked, the user will be prompted to choose if they want to install the app
+    butInstall.addEventListener('click', async () => {
+      window.deferredPrompt.prompt();
+      const { outcome } = await window.deferredPrompt.userChoice;
+      if (outcome === 'accepted') {
+        console.log('The app was installed successfully.');
+        butInstall.textContent = 'Installed!';
+      } else {
+        console.log('The app was not installed.');
       }
-      promptEvent.prompt();
-  
       window.deferredPrompt = null;
-      
-      butInstall.classList.toggle('hidden', true);
-  });
-  
-  // Added an handler for the `appinstalled` event
-  window.addEventListener('appinstalled', (event) => {
-    window.deferredPrompt = null;
+    });
   });

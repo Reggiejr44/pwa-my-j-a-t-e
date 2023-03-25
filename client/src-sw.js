@@ -7,6 +7,7 @@ const { precacheAndRoute } = require('workbox-precaching/precacheAndRoute');
 
 precacheAndRoute(self.__WB_MANIFEST);
 
+// Set up page cache
 const pageCache = new CacheFirst({
   cacheName: 'page-cache',
   plugins: [
@@ -28,19 +29,16 @@ registerRoute(({ request }) => request.mode === 'navigate', pageCache);
 
 // Implemented asset caching
 registerRoute(
-
-  ({ request }) => request.destination === 'image',
-  new CacheFirst({
-  cacheName: 'my-asset-cache',
-  plugins: [
-    new CacheableResponsePlugin({
-      statuses: [0, 200],
-    }),
-    new ExpirationPlugin({
-      maxEntries: 60,
-      maxAgeSeconds: 30 * 24 * 60 * 60,
-    }),
-  ],
-}),
-
+  // Register route for assets - style, script, and worker
+  ({ request }) => ['style', 'script', 'worker'].includes(request.destination),
+  // Use a StaleWhileRevalidate strategy to cache and serve assets
+  new StaleWhileRevalidate({
+    cacheName: 'asset-cache',
+    plugins: [
+      // Only cache responses with a 0 or 200 status code
+      new CacheableResponsePlugin({
+        statuses: [0, 200],
+      }),
+    ],
+  })
 );

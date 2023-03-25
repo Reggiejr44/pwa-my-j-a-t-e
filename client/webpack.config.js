@@ -27,6 +27,7 @@ module.exports = () => {
 
       
       new WebpackPwaManifest({
+        inject: true,
         name: 'PWA Text Editor',
         short_name: 'J.A.T.E.',
         description: 'Just Another Text Editor',
@@ -41,6 +42,8 @@ module.exports = () => {
           }
         ]
       }),
+
+      // It lets Webpack know it's a service worker
       new InjectManifest({
         swSrc: './src-sw.js',
         swDest: 'service-worker.js',
@@ -49,6 +52,7 @@ module.exports = () => {
     ],
 
     module: {
+      // CSS loaders
       rules: [
         
         {
